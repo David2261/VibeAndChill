@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Админка - Vibe&Chill</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    @keyframes gradient-x {
+        0%   { background-position: 0% 50%; }
+        50%  { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    .bg-300% { background-size: 300% 300%; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="bg-white shadow">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16 items-center">
+                <div class="text-xl font-black bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-400 
+            bg-clip-text text-transparent bg-300% animate-gradient-x">Vibe&Chill Admin</div>
+                <nav class="flex gap-4 text-sm">
+                    <a href="/admin/" class="text-gray-700 hover:text-black">Дашборд</a>
+                    <a href="/admin/adminmanagementview/" class="text-gray-700 hover:text-black">Управление</a>
+                    <a href="/admin/adminprofileview/" class="text-gray-700 hover:text-black">Профиль</a>
+                    <a href="{{ url_for('auth.index') }}" class="text-gray-500 hover:text-black">На сайт</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        {% block body %}{% endblock %}
+    </main>
+
+    <footer class="bg-white shadow mt-8">
+        <div class="max-w-7xl mx-auto px-4 py-4 text-gray-600">
+            Админка Vibe&Chill. Все права защищены.
+        </div>
+    </footer>
+</body>
+</html>

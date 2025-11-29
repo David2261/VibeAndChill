@@ -1,0 +1,8 @@
+__pycache__/*
+.venv/*
+.env
+*.lock
+*.docx
+*.zip
+.venv/
+__pycache__/*

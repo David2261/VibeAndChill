@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Товары{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Фильтры -->
+    <div class="mb-10 rounded-2xl bg-gradient-to-r from-blue-400 via-blue-400 to-yellow-400 p-[2px]">
+        <div class="rounded-2xl bg-white">
+            <div class="flex items-center justify-between px-6 pt-6">
+                <h2 class="text-2xl font-extrabold tracking-tight text-gray-900">Фильтры</h2>
+                <a href="{{ url_for('auth.products') }}" class="text-sm font-medium text-fuchsia-600 hover:text-fuchsia-700">Сбросить</a>
+            </div>
+            <form method="GET" class="px-6 pb-6 grid grid-cols-1 md:grid-cols-12 gap-4">
+                <div class="md:col-span-4">
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Категория</label>
+                    <select name="category" class="w-full rounded-xl bg-gray-50 border-0 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Все категории</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="md:col-span-4">
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Минимальная цена</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₽</span>
+                        <input type="number" name="min_price" value="{{ min_price if min_price is not none else '' }}" class="w-full pl-8 rounded-xl bg-gray-50 border-0 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500"/>
+                    </div>
+                </div>
+                <div class="md:col-span-4">
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Максимальная цена</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">₽</span>
+                        <input type="number" name="max_price" value="{{ max_price if max_price is not none else '' }}" class="w-full pl-8 rounded-xl bg-gray-50 border-0 ring-1 ring-gray-200 focus:ring-2 focus:ring-indigo-500"/>
+                    </div>
+                </div>
+                <div class="md:col-span-12 flex items-center justify-between">
+                    <div class="flex flex-wrap gap-2">
+                        {% for category in categories %}
+                        <a href="{{ url_for('auth.products', category=category.id) }}" class="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-700 hover:bg-fuchsia-100 hover:text-fuchsia-700">{{ category.category_name }}</a>
+                        {% endfor %}
+                    </div>
+                    <button type="submit" class="inline-flex items-center rounded-xl bg-gradient-to-r from-indigo-600 via-fuchsia-600 to-pink-600 text-white px-6 py-3 font-semibold shadow-md hover:opacity-90">
+                        Применить
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Список товаров -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {% for product in products %}
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="h-48 overflow-hidden">
+                <img src="{{ url_for('static', filename=get_product_image_path(product)) }}" 
+                     alt="{{ product.productname }}" 
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-300" />
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-semibold mb-2">{{ product.productname }}</h3>
+                <p class="text-gray-600 mb-2">
+                    {% for category in categories %}
+                        {% if category.id == product.category_id %}
+                            {{ category.category_name }}
+                        {% endif %}
+                    {% endfor %}
+                </p>
+                <p class="text-xl font-bold text-indigo-600 mb-4">{{ product.price }} ₽</p>
+                <form method="POST" action="{{ url_for('auth.add_to_cart', product_id=product.id) }}">
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition-colors">
+                        Добавить в корзину
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-span-full text-center py-8">
+            <p class="text-gray-500 text-lg">Товары не найдены</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Пагинация -->
+    {% if pagination.pages > 1 %}
+    <div class="mt-8 flex justify-center">
+        <nav class="flex items-center space-x-2">
+            {% if pagination.has_prev %}
+            <a href="{{ url_for('auth.products', page=pagination.prev_num, category=selected_category, min_price=min_price if min_price is not none else '', max_price=max_price if max_price is not none else '') }}"
+               class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">
+                Назад
+            </a>
+            {% endif %}
+
+            {% for page in pagination.iter_pages() %}
+                {% if page %}
+                    <a href="{{ url_for('auth.products', page=page, category=selected_category, min_price=min_price if min_price is not none else '', max_price=max_price if max_price is not none else '') }}"
+                       class="px-3 py-1 rounded-md {% if page == pagination.page %}bg-indigo-600 text-white{% else %}bg-gray-200 hover:bg-gray-300{% endif %}">
+                        {{ page }}
+                    </a>
+                {% else %}
+                    <span class="px-3 py-1">...</span>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.has_next %}
+            <a href="{{ url_for('auth.products', page=pagination.next_num, category=selected_category, min_price=min_price if min_price is not none else '', max_price=max_price if max_price is not none else '') }}"
+               class="px-3 py-1 rounded-md bg-gray-200 hover:bg-gray-300">
+                Вперед
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

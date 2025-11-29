@@ -1,0 +1,18 @@
+{% extends "admin/master.html" %}
+
+{% block title %}Профиль администратора{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Профиль администратора</h1>
+    <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+        <p><span class="font-semibold">Имя пользователя:</span> {{ current_user.username }}</p>
+        <p><span class="font-semibold">Email:</span> {{ current_user.email }}</p>
+        <p><span class="font-semibold">Роль:</span> {{ current_user.role.name }}</p>
+        <div class="mt-4">
+            <a href="{{ url_for('auth.edit_profile') }}" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Редактировать профиль</a>
+            <a href="{{ url_for('admin.index') }}" class="ml-2 bg-gray-200 px-4 py-2 rounded-md hover:bg-gray-300">Перейти в админку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

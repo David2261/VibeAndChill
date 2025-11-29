@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="text-center">
+        <h1 class="text-4xl font-bold mb-4">Добро пожаловать в наш магазин!</h1>
+        <p class="text-xl mb-8">Для просмотра товаров, пожалуйста, войдите или зарегистрируйтесь.</p>
+        <div class="space-x-4">
+            {% if not current_user.is_authenticated %}
+            <a href="{{ url_for('auth.login') }}" class="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700">
+                Войти
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="bg-gray-600 text-white px-6 py-3 rounded-md hover:bg-gray-700">
+                Зарегистрироваться
+            </a>
+            {% else %}
+            <a href="{{ url_for('auth.products') }}" class="bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700">
+                Перейти к товарам
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-8">
+    <div class="relative w-full max-w-5xl mx-auto aspect-[16/9] overflow-hidden rounded-2xl shadow-lg">
+        <img id="homeCarousel" src="{{ url_for('static', filename='banner_1.png') }}" class="w-full h-full object-cover transition-opacity duration-700" style="opacity:1;" />
+    </div>
+    <script>
+        const carouselImages = [
+            "{{ url_for('static', filename='banner_1.png') }}",
+            "{{ url_for('static', filename='banner_2.png') }}"
+        ];
+        let carouselIndex = 0;
+        const carouselEl = document.getElementById('homeCarousel');
+        setInterval(() => {
+            carouselIndex = (carouselIndex + 1) % carouselImages.length;
+            carouselEl.style.opacity = 0;
+            setTimeout(() => {
+                carouselEl.src = carouselImages[carouselIndex];
+                carouselEl.style.opacity = 1;
+            }, 300);
+        }, 3500);
+    </script>
+</div>
+{% endblock %}
